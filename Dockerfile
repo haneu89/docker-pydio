@@ -39,7 +39,6 @@ RUN chown -R www-data:www-data /var/www/pydio
 
 RUN /etc/init.d/php7.2-fpm start
 
-VOLUME /var/www/pydio
 EXPOSE 80 443
 
 CMD /etc/init.d/php7.2-fpm restart && nginx -g "daemon off;"
