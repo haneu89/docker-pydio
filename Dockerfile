@@ -26,8 +26,6 @@ RUN unzip /var/www/pydio-core-8.2.0.zip -d /var/www
 RUN mv /var/www/pydio-core-8.2.0 /var/www/pydio
 RUN chown -R www-data:www-data /var/www/pydio
 
-RUN /etc/init.d/php7.2-fpm start
-
 EXPOSE 80 443
 
 CMD /etc/init.d/php7.2-fpm restart && nginx -g "daemon off;"
