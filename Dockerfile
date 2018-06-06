@@ -13,14 +13,16 @@ RUN unzip -q /var/www/pydio.zip -d /var/www \
   && chown -R www-data:www-data /var/www
 
 COPY pydio.conf /etc/nginx/sites-available/pydio.conf
-RUN rm /etc/nginx/sites-enabled/default /etc/nginx/sites-available/default \
-  && ln -s /etc/nginx/sites-available/pydio.conf /etc/nginx/sites-enabled/pydio.conf
 
 RUN sed -i -e "s/^post_max_size.*/post_max_size = 20G/" /etc/php/7.2/fpm/php.ini \
   -e "s/^upload_max_filesize.*/upload_max_filesize = 20G/" /etc/php/7.2/fpm/php.ini \
   -e "s/^max_file_uploads.*/max_file_uploads = 20000/" /etc/php/7.2/fpm/php.ini \
   -e "s/^memory_limit.*/memory_limit = 512M/" /etc/php/7.2/fpm/php.ini \
   -e '/sendfile/i\\tclient_max_body_size 20G;' /etc/nginx/nginx.conf
+
+RUN rm /etc/nginx/sites-enabled/default /etc/nginx/sites-available/default \
+  && ln -s /etc/nginx/sites-available/pydio.conf /etc/nginx/sites-enabled/pydio.conf \
+  && /etc/init.d/nginx restart
 
 EXPOSE 80 443
 
