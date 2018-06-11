@@ -11,6 +11,7 @@ RUN sed -ri -e "s/^post_max_size.*/post_max_size = 20G/" /etc/php/7.2/fpm/php.in
 RUN sed -ri -e "s/^upload_max_filesize.*/upload_max_filesize = 20G/" /etc/php/7.2/fpm/php.ini
 RUN sed -ri -e "s/^max_file_uploads.*/max_file_uploads = 20000/" /etc/php/7.2/fpm/php.ini
 RUN sed -ri -e "s/^memory_limit.*/memory_limit = 512M/" /etc/php/7.2/fpm/php.ini
+RUN sed -ri -e "s/^output_buffering = .*/output_buffering = off/" /etc/php/7.2/fpm/php.ini
 
 RUN /etc/init.d/php7.2-fpm start
 
