@@ -1,32 +1,37 @@
-FROM ubuntu:18.04
+FROM debian:stretch-slim
 
 ENV TZ=Asia/Seoul
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
-RUN apt-get update
-RUN apt-get install -y wget unzip vim nginx php php-fpm php-mysql php-curl php-json php-gd php-intl php-mbstring php-xml php-zip php-exif php-apcu php-sqlite3
-RUN chown -R www-data:www-data /var/www
+RUN apt-get update \
+  && apt-get install -y wget unzip vim nginx php php-fpm php-mysql php-curl php-json php-gd php-intl php-mbstring php-xml php-zip php-exif php-apcu php-sqlite3
 
+<<<<<<< HEAD
 RUN sed -ri -e "s/^post_max_size.*/post_max_size = 20G/" /etc/php/7.2/fpm/php.ini
 RUN sed -ri -e "s/^upload_max_filesize.*/upload_max_filesize = 20G/" /etc/php/7.2/fpm/php.ini
 RUN sed -ri -e "s/^max_file_uploads.*/max_file_uploads = 20000/" /etc/php/7.2/fpm/php.ini
 RUN sed -ri -e "s/^memory_limit.*/memory_limit = 512M/" /etc/php/7.2/fpm/php.ini
 RUN sed -ri -e "s/^output_buffering = .*/output_buffering = off/" /etc/php/7.2/fpm/php.ini
+=======
+COPY pydio-core-8.2.0.zip /var/www/pydio.zip
+>>>>>>> db6ec2ae13b488284a8e4eb819b2934b9c68ddd3
 
-RUN /etc/init.d/php7.2-fpm start
+RUN unzip -q /var/www/pydio.zip -d /var/www \
+  && mv /var/www/pydio-core-8.2.0 /var/www/pydio \
+  && chown -R www-data:www-data /var/www
 
 COPY pydio.conf /etc/nginx/sites-available/pydio.conf
-RUN cd /etc/nginx/sites-enabled
-RUN rm /etc/nginx/sites-enabled/default
-RUN ln -s /etc/nginx/sites-available/pydio.conf /etc/nginx/sites-enabled/pydio.conf
 
-RUN cd /var/www
-COPY pydio-core-8.2.0.zip /var/www/pydio-core-8.2.0.zip
+RUN sed -i -e "s/^post_max_size.*/post_max_size = 20G/" /etc/php/7.0/fpm/php.ini \
+  -e "s/^upload_max_filesize.*/upload_max_filesize = 20G/" /etc/php/7.0/fpm/php.ini \
+  -e "s/^max_file_uploads.*/max_file_uploads = 20000/" /etc/php/7.0/fpm/php.ini \
+  -e "s/^memory_limit.*/memory_limit = 512M/" /etc/php/7.0/fpm/php.ini \
+  -e '/sendfile/i\\tclient_max_body_size 20G;' /etc/nginx/nginx.conf
 
-RUN unzip /var/www/pydio-core-8.2.0.zip -d /var/www
-RUN mv /var/www/pydio-core-8.2.0 /var/www/pydio
-RUN chown -R www-data:www-data /var/www/pydio
+RUN rm /etc/nginx/sites-enabled/default /etc/nginx/sites-available/default \
+  && ln -s /etc/nginx/sites-available/pydio.conf /etc/nginx/sites-enabled/pydio.conf \
+  && /etc/init.d/nginx restart
 
 EXPOSE 80 443
 
-CMD /etc/init.d/php7.2-fpm restart && nginx -g "daemon off;"
+CMD /etc/init.d/php7.0-fpm start && nginx -g "daemon off;"
