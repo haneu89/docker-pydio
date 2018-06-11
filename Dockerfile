@@ -6,15 +6,11 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 RUN apt-get update \
   && apt-get install -y wget unzip vim nginx php php-fpm php-mysql php-curl php-json php-gd php-intl php-mbstring php-xml php-zip php-exif php-apcu php-sqlite3
 
-<<<<<<< HEAD
 RUN sed -ri -e "s/^post_max_size.*/post_max_size = 20G/" /etc/php/7.2/fpm/php.ini
 RUN sed -ri -e "s/^upload_max_filesize.*/upload_max_filesize = 20G/" /etc/php/7.2/fpm/php.ini
 RUN sed -ri -e "s/^max_file_uploads.*/max_file_uploads = 20000/" /etc/php/7.2/fpm/php.ini
 RUN sed -ri -e "s/^memory_limit.*/memory_limit = 512M/" /etc/php/7.2/fpm/php.ini
 RUN sed -ri -e "s/^output_buffering = .*/output_buffering = off/" /etc/php/7.2/fpm/php.ini
-=======
-COPY pydio-core-8.2.0.zip /var/www/pydio.zip
->>>>>>> db6ec2ae13b488284a8e4eb819b2934b9c68ddd3
 
 RUN unzip -q /var/www/pydio.zip -d /var/www \
   && mv /var/www/pydio-core-8.2.0 /var/www/pydio \
